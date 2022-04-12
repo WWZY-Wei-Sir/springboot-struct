@@ -45,6 +45,4 @@ class SpringbootStructApplicationTests {
             System.out.println(profit);
         }
     }
-
-
 }
