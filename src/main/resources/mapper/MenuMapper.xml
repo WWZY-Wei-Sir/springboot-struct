@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wsir.mapper.MenuMapper">
+    <select id="pageSize" resultType="integer">
+        select count(*) from menu
+        <where>
+            <if test="dishName != null">
+                dish_name like concat('%', #{dishName}, '%')
+            </if>
+            <if test="dishKind != null">
+                and dish_kind like concat('%', #{dishKind}, '%')
+            </if>
+            <if test="canId != -999">
+                and can_id = #{canId}
+            </if>
+            <if test="minPrice != -999">
+                and price >= #{minPrice}
+            </if>
+            <if test="maxPrice != -999">
+                and #{maxPrice} >= price
+            </if>
+            <if test="minDishAmount != -999">
+                and dish_amount >= #{minDishAmount}
+            </if>
+            <if test="maxDishAmount != -999">
+                and #{maxDishAmount} >= dish_amount
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPage" resultMap="menuResult">
+        select * from menu left join menu_photo on menu.photo_id = menu_photo.photo_id
+        <where>
+            <if test="dishName != null">
+                dish_name like concat('%', #{dishName}, '%')
+            </if>
+            <if test="dishKind != null">
+                and dish_kind like concat('%', #{dishKind}, '%')
+            </if>
+            <if test="canId != -999">
+                   and can_id = #{canId}
+            </if>
+            <if test="minPrice != -999">
+                and price >= #{minPrice}
+              </if>
+            <if test="maxPrice != -999">
+                and #{maxPrice} >= price
+            </if>
+            <if test="minDishAmount != -999">
+                and dish_amount >= #{minDishAmount}
+            </if>
+               <if test="maxDishAmount != -999">
+                and #{maxDishAmount} >= dish_amount
+            </if>
+        </where>
+        order by menu_id desc limit #{pageNum}, #{pageSize}
+    </select>
+
+    <resultMap id="menuResult" type="menu">
+        <result property="canId" column="can_id" />
+        <association property="canteen" column="can_id" javaType="canteen" select="com.wsir.mapper.CanteenMapper.selectById">
+        </association>
+    </resultMap>
+
+</mapper>

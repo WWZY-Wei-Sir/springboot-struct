@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wsir.mapper.WorkerMapper">
+    <select id="pageSize" resultType="integer">
+        select count(*) from worker
+        <where>
+            <if test="workId != -999">
+                work_id = #{workId}
+            </if>
+            <if test="workName != null">
+                and work_name like concat('%', #{workName}, '%')
+            </if>
+            <if test="workSex != null">
+                and work_sex = #{workSex}
+            </if>
+            <if test="canId != -999">
+                and worker.can_id = #{canId}
+            </if>
+            <if test="minSalary != -999">
+                and salary >= #{minSalary}
+            </if>
+            <if test="maxSalary != -999">
+                and #{maxSalary} >= salary
+            </if>
+            <if test="minEntryTime != null">
+                and entry_time >= #{minEntryTime}
+            </if>
+            <if test="maxEntryTime != null">
+                and #{maxEntryTime} >= entry_time
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPage" resultType="worker">
+        select * from worker left join canteen on worker.can_id = canteen.can_id
+         <where>
+             <if test="workId != -999">
+                 work_id = #{workId}
+             </if>
+             <if test="workName != null">
+                 and work_name like concat('%', #{workName}, '%')
+             </if>
+             <if test="workSex != null">
+                 and work_sex = #{workSex}
+             </if>
+             <if test="canId != -999">
+                 and worker.can_id = #{canId}
+             </if>
+             <if test="minSalary != -999">
+                 and salary >= #{minSalary}
+             </if>
+             <if test="maxSalary != -999">
+                 and #{maxSalary} >= salary
+             </if>
+             <if test="minEntryTime != null">
+                 and entry_time >= #{minEntryTime}
+             </if>
+             <if test="maxEntryTime != null">
+                 and #{maxEntryTime} >= entry_time
+             </if>
+         </where>
+         limit #{pageNum}, #{pageSize}
+    </select>
+
+</mapper>

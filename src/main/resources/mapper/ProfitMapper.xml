@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wsir.mapper.ProfitMapper">
+    <select id="pageSize" resultType="integer">
+        select count(*) from profit
+        <where>
+            <if test="canId != -999">
+                can_id = #{canId}
+            </if>
+            <if test="localDate != null">
+                and date = #{localDate}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPage" resultType="profit">
+        select * from profit left join canteen on profit.can_id = canteen.can_id
+        <where>
+            <if test="canId != -999">
+                profit.can_id = #{canId}
+            </if>
+            <if test="localDate != null">
+                and date = #{localDate}
+            </if>
+        </where>
+        order by profit_id desc limit #{pageNum}, #{pageSize}
+    </select>
+</mapper>

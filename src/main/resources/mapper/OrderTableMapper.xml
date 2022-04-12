@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wsir.mapper.OrderTableMapper">
+    <select id="pageSize" resultType="integer">
+        select count(*) from order_table left join deal on order_table.order_id = deal.order_id
+        <where>
+            <if test="role == 'schoolCard'">
+                and card_id = #{id}
+            </if>
+            <if test="role == 'customer'">
+                and cus_id = #{id}
+            </if>
+            <if test="orderId != -999">
+                and order_table.order_id = #{orderId}
+            </if>
+            <if test="canId != -999">
+                and can_id = #{canId}
+            </if>
+            <if test="isPaid != null">
+                and is_paid = #{isPaid} and is_token != '已取餐'
+            </if>
+            <if test="isPaid == null">
+                and (is_paid = '否' or is_token != '已取餐')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPage" resultMap="orderTableResult">
+        select * from order_table left join canteen on order_table.can_id = canteen.can_id
+        left join deal on order_table.order_id = deal.order_id
+        <where>
+            <if test="role == 'schoolCard'">
+                and card_id = #{id}
+            </if>
+            <if test="role == 'customer'">
+                and cus_id = #{id}
+            </if>
+            <if test="orderId != -999">
+                and order_table.order_id = #{orderId}
+            </if>
+            <if test="canId != -999">
+                and order_table.can_id = #{canId}
+            </if>
+            <if test="isPaid != null">
+                and is_paid = #{isPaid} and is_token != '已取餐'
+            </if>
+            <if test="isPaid == null">
+                and (is_paid = '否' or is_token != '已取餐')
+            </if>
+        </where>
+        limit #{pageNum}, #{pageSize}
+    </select>
+
+    <resultMap id="orderTableResult" type="orderTable">
+        <result property="orderId" column="order_id"/>
+        <association property="deal" column="order_id" javaType="deal" select="com.wsir.mapper.DealMapper.selectByOrderId">
+        </association>
+    </resultMap>
+
+    <select id="pageSizeForCardOrComsumer" resultType="integer">
+        select count(*) from order_table left join deal on order_table.order_id = deal.order_id
+            <where>
+                <if test="cardId != -999">
+                    and card_id = #{cardId}
+                </if>
+                <if test="cusId != -999">
+                    and cus_id = #{cusId}
+                </if>
+                <if test="canId != -999">
+                    and can_id = #{canId}
+                </if>
+                <if test="minDealTime != null">
+                    and deal_time >= #{minDealTime}
+                </if>
+                <if test="maxDealTime != null">
+                    and #{maxDealTime} >= deal_time
+                </if>
+                and is_paid = '是' and is_token = '已取餐'
+            </where>
+    </select>
+
+    <select id="selectPageForCardOrComsumer" resultMap="cardOrComsumer">
+        select * from order_table left join deal on order_table.order_id = deal.order_id
+        left join canteen on order_table.can_id = canteen.can_id
+            <where>
+                <if test="cardId != -999">
+                    and card_id = #{cardId}
+                </if>
+                <if test="cusId != -999">
+                    and cus_id = #{cusId}
+                </if>
+                <if test="canId != -999">
+                    and order_table.can_id = #{canId}
+                </if>
+                <if test="minDealTime != null">
+                    and deal_time >= #{minDealTime}
+                </if>
+                <if test="maxDealTime != null">
+                    and #{maxDealTime} >= deal_time
+                </if>
+                and is_paid = '是' and is_token = '已取餐'
+            </where>
+        order by deal_time desc limit #{pageNum}, #{pageSize}
+    </select>
+
+    <resultMap id="cardOrComsumer" type="orderTable">
+        <result property="orderId" column="order_id"/>
+        <association property="deal" column="order_id" javaType="deal"
+                     select="com.wsir.mapper.DealMapper.selectByOrderId"></association>
+        <collection property="tradeRecords" column="order_id" javaType="java.util.ArrayList" ofType="tradeRecord"
+                    select="com.wsir.mapper.TradeRecordMapper.selectByOrderId"></collection>
+    </resultMap>
+</mapper>

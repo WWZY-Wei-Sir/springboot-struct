@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wsir.mapper.CustomerMapper">
+    <select id="pageSize" resultType="integer">
+        select count(*) from customer
+        <where>
+            <if test="minBind != null">
+                bind_time >= #{minBind}
+            </if>
+            <if test="maxBind != null">
+                and #{maxBind} >= bind_time
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPage" resultType="customer">
+        select * from customer
+        <where>
+            <if test="minBind != null">
+                bind_time >= #{minBind}
+            </if>
+            <if test="maxBind != null">
+                and #{maxBind} >= bind_time
+            </if>
+        </where>
+        limit #{pageNum}, #{pageSize}
+    </select>
+</mapper>
