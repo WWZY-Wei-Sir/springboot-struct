@@ -40,6 +40,10 @@ class SpringbootStructApplicationTests {
         for (OrderTable orderTable : orderTables) {
             System.out.println(orderTable);
         }
+        List<Menu> menus = menuMapper.selectPage(0, 10, null, null, -999, -999, -999, -999, -999);
+        for (Menu menu : menus) {
+            System.out.println(menu);
+        }
     }
 
 
